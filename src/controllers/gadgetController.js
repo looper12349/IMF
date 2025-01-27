@@ -25,21 +25,36 @@ exports.getAllGadgets = async (req, res) => {
 exports.createGadget = async (req, res) => {
   let gadgetDataStatus = {};
   try {
+    let uniqueCodename;
+    let existingGadget;
+    
+    // Retry logic for codename uniqueness
+    do {
+      uniqueCodename = generateCodename(); // Generate a new codename
+      console.log("Generated codename:", uniqueCodename);
+      
+      // Check if codename already exists in the database
+      existingGadget = await Gadget.findOne({ where: { codename: uniqueCodename } });
+    } while (existingGadget); // Retry if codename already exists
+
     const gadgetData = {
       ...req.body,
       name: req.body.name || `Gadget ${Math.random().toString(36).substring(2, 10)}`,
-      codename: generateCodename(),
+      codename: uniqueCodename, // Assign the unique codename
       missionSuccessProbability: generateProbability()
     };
+    
     gadgetDataStatus = gadgetData;
 
-    
+    // Create the gadget
     const gadget = await Gadget.create(gadgetData);
+
     res.status(201).json(gadget);
   } catch (error) {
-    res.status(400).json({ message: 'Error creating gadget', error: error.message, gadget: gadgetDataStatus});
+    res.status(400).json({ message: 'Error creating gadget', error: error.message, gadget: gadgetDataStatus });
   }
 };
+
 
 //  Update a gadget
 exports.updateGadget = async (req, res) => {
@@ -87,7 +102,7 @@ exports.selfDestruct = async (req, res) => {
     const { id } = req.params;
     const confirmationCode = Math.random().toString(36).substring(2, 10);
     
-    // Simulate confirmation (in a real scenario, this would be more secure)
+    
     const [updated] = await Gadget.update({
       status: 'Destroyed'
     }, {
