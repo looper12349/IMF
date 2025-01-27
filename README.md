@@ -5,7 +5,7 @@ A RESTful API for managing secret gadgets and admin authentication.
 ## Base URL
 https://<base_url>/api/v1
 
-##Deployed Url
+## Deployed Url
 https://imf-1anr.onrender.com/
 
 
