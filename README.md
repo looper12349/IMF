@@ -2,6 +2,24 @@
 
 A RESTful API for managing secret gadgets and admin authentication.
 
+## Base URL
+https://<base_url>/api/v1
+
+##Deployed Url
+https://imf-1anr.onrender.com/
+
+
+## API Structure
+The API follows a versioned structure:
+- `/api/v1/admin` - Admin authentication endpoints
+- `/api/v1/gadgets` - Gadget management endpoints
+
+## Authentication
+
+The API uses JWT (JSON Web Token) for authentication. Include the token in the Authorization header:
+
+### Headers
+
 ## Table of Contents
 - [Authentication](#authentication)
 - [Admin Endpoints](#admin-endpoints)
