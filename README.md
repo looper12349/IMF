@@ -1,4 +1,4 @@
-# Secret Gadget Management API
+# Phoenix : IMF Gadget API Development Challenge
 
 A RESTful API for managing secret gadgets and admin authentication.
 
@@ -6,10 +6,16 @@ A RESTful API for managing secret gadgets and admin authentication.
 - [Authentication](#authentication)
 - [Admin Endpoints](#admin-endpoints)
 - [Gadget Endpoints](#gadget-endpoints)
+- [Limitations & Considerations](#limitations--considerations)
 
 ## Authentication
 
 The API uses JWT (JSON Web Token) for authentication. Include the token in the Authorization header:
+
+### Headers
+http
+Authorization: Bearer <your_token>
+Content-Type: application/json
 
 
 ## Admin Endpoints
@@ -17,12 +23,20 @@ The API uses JWT (JSON Web Token) for authentication. Include the token in the A
 ### Create Admin
 - **URL**: `/admin/signup`
 - **Method**: `POST`
+- **Headers**: 
+  ```http
+  Content-Type: application/json
+  ```
 - **Response**: Returns the generated password and admin details
 - **Success Response Code**: 201
 
 ### Admin Login
 - **URL**: `/admin/login`
 - **Method**: `POST`
+- **Headers**: 
+  ```http
+  Content-Type: application/json
+  ```
 - **Request Body**:
   ```json
   {
@@ -35,25 +49,19 @@ The API uses JWT (JSON Web Token) for authentication. Include the token in the A
 
 ## Gadget Endpoints
 
+All gadget endpoints require authentication. Include the JWT token in the Authorization header.
+
 ### Get All Gadgets
 - **URL**: `/gadget`
 - **Method**: `GET`
+- **Headers**: 
+  ```http
+  Authorization: Bearer <your_token>
+  ```
 - **Query Parameters**: 
   - `status` (optional) - Filter gadgets by status
 - **Success Response Code**: 200
 - **Description**: Returns all gadgets. If no status is specified, returns only 'Available' gadgets.
-
-### Create Gadget
-- **URL**: `/gadget`
-- **Method**: `POST`
-- **Request Body**:
-  ```json
-  {
-    "name": "string" // Optional, will be auto-generated if not provided
-  }
-  ```
-- **Success Response Code**: 201
-- **Description**: Creates a new gadget with auto-generated codename and mission success probability.
 
 ### Update Gadget
 - **URL**: `/gadget/:id`
@@ -116,3 +124,38 @@ Required environment variables:
 - `JWT_SECRET`: Secret key for JWT token generation
 - `JWT_EXPIRATION`: JWT token expiration time
 - `NODE_ENV`: Application environment (development/production)
+
+
+## Limitations & Considerations
+
+### Codename Generation
+- The current codename generation system is limited to approximately 140 unique combinations
+- Based on the following calculation:
+  ```
+  Total combinations = codenamePrefixes.length × codenameNouns.length
+  Current capacity = 6 prefixes × 17 nouns = 102 combinations
+  ```
+- To scale this system, consider:
+  1. Adding more prefix and noun combinations
+  2. Implementing a hash-based naming system
+  3. Using UUID or timestamp-based suffixes
+
+### Rate Limiting Considerations
+The API could benefit from implementing rate limiting to:
+- Prevent brute force attacks on authentication endpoints
+- Protect against DoS attacks
+- Ensure fair usage of resources
+
+Suggested rate limits:
+- Authentication endpoints: 5 requests per minute
+- Gadget creation: 10 requests per minute
+- Get requests: 60 requests per minute
+
+### Future Improvements
+1. Implement rate limiting using Redis or similar caching system
+2. Add pagination for gadget listing endpoint
+3. Expand codename generation algorithm
+4. Add request logging and monitoring
+5. Implement IP-based blocking for security
+
+[Rest of the previous documentation remains the same...]
